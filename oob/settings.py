@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
-ROOT_URLCONF = 'oobapigw.urls'
+ROOT_URLCONF = 'oob.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +73,7 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER' : 'services.custom_exeption_handlers.custom_exeption_handlers'
 }
 
-WSGI_APPLICATION = 'oobapigw.wsgi.application'
+WSGI_APPLICATION = 'oob.wsgi.application'
 
 
 # Database

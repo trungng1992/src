@@ -20,6 +20,6 @@ from django.urls import include
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
-    path(r'^docs/', include_docs_urls(title="Console OOB", description="Restful API for console")),
-    path(r'^api/v1/', include("api.urls"))
+    re_path(r'^docs/', include_docs_urls(title="Console OOB", description="Restful API for console")),
+    re_path(r'^api/v1/', include("api.urls"))
 ]

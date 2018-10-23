@@ -20,7 +20,7 @@ class Checksum_Header(object):
         if timeStamp == nTimestamp_bypass and settings.DEBUG:
             return
 
-        if if abs(int(nTimestamp) - int(timestamp)) > 600:
+        if abs(int(nTimestamp) - int(timestamp)) > 600:
             return Response({
                 'response_code': HTTP_400_BAD_REQUEST,
                 'response_code': 'Please check timestamp'

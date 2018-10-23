@@ -12,7 +12,7 @@ import hashlib
 
 class Authentication(ViewSet):
     def check_user(self, request, *agrs, **kwargs):
-        _arrRequestParamKeys = kwargs.keys()
+        _arrRequestParamKeys = request.data.keys()
         if 'username' not in _arrRequestParamKeys or 'password' not in _arrRequestParamKeys:
 
             return Response({
@@ -20,15 +20,15 @@ class Authentication(ViewSet):
                 'response_msg': 'Invalid Requests'
             }, status = HTTP_400_BAD_REQUEST)
 
-        _userName = kwargs['username']
-        _password = kwargs['password']
+        _userName = request.data['username']
+        _password = request.data['password']
 
-        _queryDB = Users.object.get(_userName)
+        _queryDB = Users.objects.get(username=_userName)
 
-        _passSalt = _password + binascii.hexlify(_queryDB.password_salt).upper()
+        _passSalt = _password + binascii.hexlify(_queryDB.password_salt).decode("utf-8").upper()
 
         m = hashlib.sha256()
-        m.update(bytearray(passsalt,"UTF-8"))
+        m.update(bytearray(_passSalt,"UTF-8"))
 
         _passhash = binascii.hexlify(m.digest())
         _passHashInDB = binascii.hexlify(_queryDB.password_hash)
@@ -40,6 +40,6 @@ class Authentication(ViewSet):
             }, status = HTTP_200_OK)
         else:
             return Response({
-                'response_code' : HTTP_400_OK,
+                'response_code' : HTTP_400_BAD_REQUEST,
                 'response_msg'  : "Faied"
             }, status = HTTP_400_BAD_REQUEST)

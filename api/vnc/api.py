@@ -5,11 +5,15 @@ from rest_framework.decorators import action
 
 from api.models import Users
 from api.models import Connection
+from api.models import Connection_Parameter
+from api.models import Connection_Permission
 
 from helpers.container_vnc import ContainerVNC
 import numpy as np
 import binascii
 import hashlib
+import random
+import string
 
 class User(ViewSet):
     def get_user_detail(self, request, *agrs, **kwargs):
@@ -39,15 +43,14 @@ class User(ViewSet):
                 }, status = HTTP_400_BAD_REQUEST)
 
     def create_user(self, request, *args, **kwargs):
-
-        _arrRequestParamKeys = kwargs.keys()
+        _arrRequestParamKeys = request.data.keys()
         if 'username' not in _arrRequestParamKeys:
             return Response({
                 'response_code': HTTP_400_BAD_REQUEST,
                 'response_msg': 'Invalid Requests'
             }, status = HTTP_400_BAD_REQUEST)
 
-        _userName = kwargs['username']
+        _userName = request.data['username']
 
         try:
             #update new password
@@ -57,7 +60,7 @@ class User(ViewSet):
                      for n in range(10)])
 
             _passSalt = np.random.bytes(32)
-            _passhash = _randomPasswordGuacamole+binascii.hexlify(_passSalt).upper()
+            _passhash = _randomPasswordGuacamole+binascii.hexlify(_passSalt).decode("utf-8").upper()
 
             _queryDB.password_hash = _passhash
             _queryDB.password_salt = _passSalt
@@ -83,16 +86,18 @@ class User(ViewSet):
             _queryDB.username = _userName
             _queryDB.password_hash = m.digest()
             _queryDB.password_salt = _passSalt
+            _queryDB.disabled = 0
+            _queryDB.expired = 0
             _queryDB.save()
             id = _queryDB.user_id
 
-        _helperVNC = ContainerVNC(k)
+        _helperVNC = ContainerVNC(_userName)
 
         _randomPassword = ''.join([random.choice(
                 string.ascii_letters + string.digits)
                  for n in range(8)])
 
-        _rsp = _helperVNC.create_vnc(_userName, pswd, id)
+        _rsp = _helperVNC.create_vnc(_userName, _randomPassword, 2)
 
         if _rsp.status_code == 500:
             return Response({
@@ -100,8 +105,31 @@ class User(ViewSet):
                 'response_msg': 'Internal Error. Please contact p.sns.tos@vng.ocm.vn to get more information'
             }, HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+        #return Response(_rsp.text)
         _jsonResponse = json.load(_rsp.text)
+
+        if _jsonResponse['response_code'] == 200:
+            _arrResponse = _jsonResponse['response_msg']
+            _rsp_service = _arrResponse['container_service']
+            _rsp_port    = _arrResponse['container_port']
+            _rsp_ip      = _arrResponse['container_ip']
+            _rsp_name    = _arrResponse['container_name']
+
+            _tmpConnection = Connection()
+            _tmpConnection.connection_name = _rsp_name
+            _tmpConnection.protocol = _rsp_service.lower()
+            _tmpConnection.max_connections = 2
+            _tmpConnection.max_connections_per_user = 1
+            _tmpConnection.proxy_encryption_method = None
+            _tmpConnection.proxy_hostname = None
+            _tmpConnection.save()
+
+            _tmpConnection.Connection_Parameter.create(parameter_name="color-depth", parameter_value="24")
+            _tmpConnection.Connection_Parameter.create(parameter_name="hostname", parameter_value="10.12.167.202")
+            _tmpConnection.Connection_Parameter.create(parameter_name="password", parameter_value="vncpassword")
+            _tmpConnection.Connection_Parameter.create(parameter_name="port", parameter_value="5901")
+
+
         return Response({
             'response_code': _jsonResponse['response_code'],
             'response_msg': _jsonResponse['response_msg']

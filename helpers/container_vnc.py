@@ -20,9 +20,9 @@ class ContainerVNC(object):
     def __get_header(self):
         nTimestamp   = str(int(time()))
         strToken   = hashlib.sha256('_'.join([
-                        USER_API,
-                        PASSWORD_API,
-                        timestamp]).encode('utf-8')).hexdigest()
+                        TOSAPI_USER,
+                        TOSAPI_PASSWORD,
+                        nTimestamp]).encode('utf-8')).hexdigest()
 
         custom_header = {
             'Checksum-Token' : str(strToken),
@@ -36,17 +36,15 @@ class ContainerVNC(object):
         payload = {
             "id"        : id,
             "user"      : user,
-            "pass"      : pwd
+            "pass"      : pswd
         }
 
-        data = json.dumps(data)
+        data = json.dumps(payload)
 
-        r = requests.post(self.url + "/create", headers = self.__get_header, data = data)
+        r = requests.post(self.url + "/create", headers = self.__get_header(), data = data)
         return r
 
     def get_status_vnc(self, connection_name):
         r = requests.get(self.url + "/status/" + connection_name,   headers= self.__get_header())
 
         return r
-
-        

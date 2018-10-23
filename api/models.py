@@ -32,7 +32,7 @@ class Users(models.Model):
     email_address = models.CharField(max_length=256)
     organization = models.CharField(max_length=256)
     organizational_role = models.CharField(max_length=256)
-    
+
     objects = models.Manager()
     test_abc = models.Manager()
 
@@ -60,9 +60,12 @@ class Connection_Parameter(models.Model):
     Table: guacamole_connection_parameter
     '''
     class Meta:
+        managed = False
         db_table = "guacamole_connection_parameter"
+
     connection_id =  models.ForeignKey(
         Connection,
+        db_column="connection_id",
         on_delete=models.CASCADE,
         blank = False,
         null = False
@@ -75,9 +78,12 @@ class Connection_Permission(models.Model):
     Table: guacamole_connection_permission
     '''
     class Meta:
+        managed = False
         db_table = "guacamole_connection_permission"
+
     user_id = models.ForeignKey(
         Users,
+        db_column="user_id",
         on_delete=models.CASCADE,
         blank = False,
         null = False
@@ -85,6 +91,7 @@ class Connection_Permission(models.Model):
 
     connection_id = models.ForeignKey(
         Connection,
+        db_column="connection_id",
         on_delete=models.CASCADE,
         blank = False,
         null = False

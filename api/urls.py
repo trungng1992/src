@@ -5,7 +5,7 @@ from api.vnc.api import User
 from api.auth.authentication import Authentication
 
 user_get = User.as_view({
-    'get' : 'get',
+    'get' : 'get_user_detail',
 })
 
 user_post = User.as_view({
@@ -17,7 +17,7 @@ ctrl_auth = Authentication.as_view({
 })
 
 urlpatterns = [
-    url(r'user/get/(?P<user_name>[a-zA-Z0-9]+)', user_get),
+    url(r'user/get/(?P<username>[a-zA-Z0-9]+)', user_get),
     url(r'user/create', user_post),
     url(r'auth/check', ctrl_auth)
 ]

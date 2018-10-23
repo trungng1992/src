@@ -41,13 +41,11 @@ class ContainerVNC(object):
 
         data = json.dumps(data)
 
-        r = requests.post(self.url . "/create",
-                            headers = self.__get_header,
-                            data = data)
+        r = requests.post(self.url + "/create", headers = self.__get_header, data = data)
         return r
 
     def get_status_vnc(self, connection_name):
-        r = requests.get(self.url . "/status/" . connection_name,   headers= self.__get_header())
+        r = requests.get(self.url + "/status/" + connection_name,   headers= self.__get_header())
 
         return r
 

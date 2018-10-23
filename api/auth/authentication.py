@@ -3,18 +3,17 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_IN
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 
-from api.models import User
+from api.models import Users
 
 from helpers.container_vnc import ContainerVNC
-from numpy as np
+import numpy as np
 import binascii
 import hashlib
 
 class Authentication(ViewSet):
     def check_user(self, request, *agrs, **kwargs):
         _arrRequestParamKeys = kwargs.keys()
-        if 'username' not in _arrRequestParamKeys
-            or 'password' not int _arrRequestParamKeys:
+        if 'username' not in _arrRequestParamKeys or 'password' not in _arrRequestParamKeys:
 
             return Response({
                 'response_code': HTTP_400_BAD_REQUEST,
@@ -24,7 +23,7 @@ class Authentication(ViewSet):
         _userName = kwargs['username']
         _password = kwargs['password']
 
-        _queryDB = User.object.get(_userName)
+        _queryDB = Users.object.get(_userName)
 
         _passSalt = _password + binascii.hexlify(_queryDB.password_salt).upper()
 

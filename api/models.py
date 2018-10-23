@@ -9,28 +9,32 @@ class PERMISSION(Enum):
     ADMINISTER = 'ADMINISTER'
 
 
-class User(models.Model):
+class Users(models.Model):
     '''
     Table: guacamole_user
     '''
     class Meta:
         db_table = "guacamole_user"
+
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length = 128, unique=True, null=False)
     password_hash = models.BinaryField(max_length=32, null=False)
     password_salt = models.BinaryField(max_length=32, null=False)
     password_date = models.DateTimeField(auto_now=True)
-    disable = models.PositiveSmallIntegerField()
+    disabled = models.PositiveSmallIntegerField()
     expired = models.PositiveSmallIntegerField()
     access_window_start = models.DateTimeField()
     access_window_end = models.DateTimeField()
     valid_from = models.DateField()
-    valid_util = models.DateField()
+    valid_until = models.DateField()
     timezone = models.CharField(max_length=64)
-    fullname = models.CharField(max_length=256)
+    full_name = models.CharField(max_length=256)
     email_address = models.CharField(max_length=256)
     organization = models.CharField(max_length=256)
-    organization_role = models.CharField(max_length=256)
+    organizational_role = models.CharField(max_length=256)
+    
+    objects = models.Manager()
+    test_abc = models.Manager()
 
 class Connection(models.Model):
     '''
@@ -46,9 +50,10 @@ class Connection(models.Model):
     proxy_hostname = models.CharField(max_length=512)
     proxy_encryption_method = models.CharField(max_length=255)
     max_connections = models.IntegerField()
-    max_conenctions_per_user = models.IntegerField()
+    max_connections_per_user = models.IntegerField()
     connection_weight = models.IntegerField()
     failover_only = models.PositiveSmallIntegerField()
+    objects = models.Manager()
 
 class Connection_Parameter(models.Model):
     '''
@@ -72,7 +77,7 @@ class Connection_Permission(models.Model):
     class Meta:
         db_table = "guacamole_connection_permission"
     user_id = models.ForeignKey(
-        User,
+        Users,
         on_delete=models.CASCADE,
         blank = False,
         null = False

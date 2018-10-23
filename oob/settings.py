@@ -83,9 +83,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'guacamole_db',
-        'USER': 'guacamole_db',
-        'PASSWORD': 'passguacamole',
-        'HOST': '10.12.166.191',
+        'USER': 'guacamole_user',
+        'PASSWORD': '3iDwp8PNZhiYnbLHqC2s',
+        'HOST': '10.10.34.101',
         'POST': '3306'
     }
 }

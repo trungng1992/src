@@ -3,26 +3,25 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_IN
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 
-from api.models import User
+from api.models import Users
+from api.models import Connection
 
 from helpers.container_vnc import ContainerVNC
-from numpy as np
+import numpy as np
 import binascii
 import hashlib
 
 class User(ViewSet):
     def get_user_detail(self, request, *agrs, **kwargs):
-        return Response({
-            response_code: 'asdasd'
-        })
         if 'username' not in kwargs:
             return Response({
                 'response_code': HTTP_400_BAD_REQUEST,
                 'response_msg': 'Can not get information of requests'
             }, status = HTTP_400_BAD_REQUEST)
         else:
+            name = Users.objects.get(username=kwargs['username'])
             try:
-                name = User.objects.get(username=kwargs['username'])
+                name = Users.objects.get(username=kwargs['username'])
 
                 return Response({
                     'response_code': HTTP_200_OK,
@@ -30,12 +29,12 @@ class User(ViewSet):
                     'data': name.user_id
                 }, status = HTTP_200_OK)
 
-            except User.DoesNotExist:
+            except Users.DoesNotExist:
                 name = []
 
                 return Response({
                     'response_code': HTTP_400_BAD_REQUEST,
-                    'response_msg': 'User invalid',
+                    'response_msg': 'Users invalid',
                     'data': name
                 }, status = HTTP_400_BAD_REQUEST)
 
@@ -52,7 +51,7 @@ class User(ViewSet):
 
         try:
             #update new password
-            _queryDB = User.object.get(_userName)
+            _queryDB = Users.object.get(_userName)
             _randomPasswordGuacamole = ''.join([random.choice(
                     string.ascii_letters + string.digits)
                      for n in range(10)])
@@ -67,9 +66,9 @@ class User(ViewSet):
 
             id = _queryDB.user_id
 
-        except User.DoesNotExist:
-            #create User
-            _queryDB = User()
+        except Users.DoesNotExist:
+            #create Users
+            _queryDB = Users()
 
             _randomPasswordGuacamole = ''.join([random.choice(
                     string.ascii_letters + string.digits)

@@ -67,10 +67,6 @@ LOGGING = {
         }
     },
     'filters': {
-        'special': {
-            '()': 'project.logging.SpecialFilter',
-            'foo': 'bar',
-        },
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
@@ -97,7 +93,6 @@ LOGGING = {
         'api': {
             'handlers': ['files'],
             'level': 'INFO',
-            'filters': ['special']
         }
     }
 }

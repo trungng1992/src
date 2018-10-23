@@ -65,8 +65,8 @@ class User(ViewSet):
             m = hashlib.sha256()
             m.update(bytearray(_passhash,"UTF-8"))
 
-            _queryDB.password_hash = _passhash
-            _queryDB.password_salt = m.digest()
+            _queryDB.password_hash = m.digest()
+            _queryDB.password_salt = _passSalt
             _queryDB.save()
 
 

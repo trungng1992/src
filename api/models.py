@@ -42,6 +42,7 @@ class Connection(models.Model):
     '''
     class Meta:
         db_table = "guacamole_connection"
+
     connection_id  = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length = 11, null=False)
     parent_id = models.IntegerField()

@@ -124,11 +124,20 @@ class User(ViewSet):
             _tmpConnection.proxy_hostname = None
             _tmpConnection.save()
 
-            _tmpConnection.Connection_Parameter.create(parameter_name="color-depth", parameter_value="24")
-            _tmpConnection.Connection_Parameter.create(parameter_name="hostname", parameter_value="10.12.167.202")
-            _tmpConnection.Connection_Parameter.create(parameter_name="password", parameter_value="vncpassword")
-            _tmpConnection.Connection_Parameter.create(parameter_name="port", parameter_value="5901")
+            _tmpColorParameter = Connection_Parameter(id=None, parameter_name="color-depth", parameter_value="24", connection_id=_tmpConnection)
+            _tmpColorParameter.save()
 
+            _tmpHostnameParameter = Connection_Parameter(id=None, parameter_name="hostname", parameter_value=_rsp_ip,  connection_id=_tmpConnection)
+            _tmpHostnameParameter.save()
+
+            _tmpPassParameter =  Connection_Parameter(id=None, parameter_name="password", parameter_value=_randomPassword,  connection_id=_tmpConnection)
+            _tmpPassParameter.save()
+
+            _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
+            _tmpPortParameter.save()
+
+            _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB)
+            _tmpConnectionPermission.save()
 
         return Response({
             'response_code': _jsonResponse['response_code'],

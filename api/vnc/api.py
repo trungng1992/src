@@ -54,7 +54,7 @@ class User(ViewSet):
 
         try:
             #update new password
-            _queryDB = Users.object.get(_userName)
+            _queryDB = Users.objects.get(username=_userName)
             _randomPasswordGuacamole = ''.join([random.choice(
                     string.ascii_letters + string.digits)
                      for n in range(10)])
@@ -78,7 +78,7 @@ class User(ViewSet):
                      for n in range(10)])
 
             _passSalt = np.random.bytes(32)
-            _passhash = _randomPasswordGuacamole+binascii.hexlify(_passSalt).upper()
+            _passhash = _randomPasswordGuacamole+binascii.hexlify(_passSalt).decode("utf-8").upper()
 
             m = hashlib.sha256()
             m.update(bytearray(_passhash,"UTF-8"))

@@ -91,7 +91,7 @@ LOGGING = {
             'propagate': True,
         },
         'api': {
-            'handlers': ['files'],
+            'handlers': ['file'],
             'level': 'INFO',
         }
     }

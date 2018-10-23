@@ -14,6 +14,7 @@ import binascii
 import hashlib
 import random
 import string
+import json
 
 class User(ViewSet):
     def get_user_detail(self, request, *agrs, **kwargs):
@@ -139,7 +140,7 @@ class User(ViewSet):
             _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
             _tmpPortParameter.save()
 
-            _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB)
+            _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB, permission="READ")
             _tmpConnectionPermission.save()
 
         return Response({

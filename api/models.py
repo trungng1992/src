@@ -13,6 +13,8 @@ class User(models.Model):
     '''
     Table: guacamole_user
     '''
+    class Meta:
+        db_table = "guacamole_user"
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length = 128, unique=True, null=False)
     password_hash = models.BinaryField(max_length=32, null=False)
@@ -34,6 +36,8 @@ class Connection(models.Model):
     '''
     Table: guacamole_connection
     '''
+    class Meta:
+        db_table = "guacamole_connection"
     connection_id  = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length = 11, null=False)
     parent_id = models.IntegerField()
@@ -47,6 +51,11 @@ class Connection(models.Model):
     failover_only = models.PositiveSmallIntegerField()
 
 class Connection_Parameter(models.Model):
+    '''
+    Table: guacamole_connection_parameter
+    '''
+    class Meta:
+        db_table = "guacamole_connection_parameter"
     connection_id =  models.ForeignKey(
         Connection,
         on_delete=models.CASCADE,
@@ -57,6 +66,11 @@ class Connection_Parameter(models.Model):
     parameter_value = models.CharField(max_length=4096)
 
 class Connection_Permission(models.Model):
+    '''
+    Table: guacamole_connection_permission
+    '''
+    class Meta:
+        db_table = "guacamole_connection_permission"
     user_id = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

@@ -130,3 +130,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 APPEND_SLASH  = True
+
+
+####
+#For API incomming
+####
+USER_API = "t0s4ser"
+PASS_API = "c353979018923f2b5eaa350f05e77b2f"

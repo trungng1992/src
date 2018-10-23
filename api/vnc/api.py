@@ -7,7 +7,7 @@ from api.models import Users
 from api.models import Connection
 from api.models import Connection_Parameter
 from api.models import Connection_Permission
-
+from oob import settings
 from helpers.container_vnc import ContainerVNC
 import numpy as np
 import binascii
@@ -110,7 +110,18 @@ class User(ViewSet):
             }, HTTP_500_INTERNAL_SERVER_ERROR)
 
         #return Response(_rsp.text)
-        _jsonResponse = json.load(_rsp.text)
+        if not settings.DEBUG:
+            _jsonResponse = _rsp.json()
+        else:
+            _jsonResponse = {
+                'response_code': 200,
+                'response_msg' : {
+                    'container_service' : 'vnc',
+                    'container_port'    : '5901',
+                    'container_ip'      : "10.10.10.10",
+                    "container_name"    : "test_debug"
+                }
+            }
 
         if _jsonResponse['response_code'] == 200:
             _arrResponse = _jsonResponse['response_msg']

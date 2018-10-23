@@ -50,8 +50,57 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'middlewares.header_authentication.Checksum_Header'
+    'middlewares.header_authentication.Checksum_Header'
 ]
+
+LOGGING = {
+    'version' : 1,
+    'disabled_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' :  '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style'  : '{'
+        },
+        'simple' : {
+            'format' : '{levelname} {message}',
+            'style'  : '{'
+        }
+    },
+    'filters': {
+        'special': {
+            '()': 'project.logging.SpecialFilter',
+            'foo': 'bar',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level' : 'DEBUG',
+            'class' : 'logging.FileHandler',
+            'filname': BASE_DIR + "/django_debug.log",
+            'formatter': 'simple'
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'api': {
+            'handlers': ['files'],
+            'level': 'INFO',
+            'filters': ['special']
+        }
+    }
+}
 
 ROOT_URLCONF = 'oob.urls'
 

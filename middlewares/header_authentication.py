@@ -3,7 +3,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_IN
 from oob import settings
 
 class Checksum_Header(object):
-    def authenticate(self, request):
+    def process_request(self, request):
         USER_API = settings.USER_API
         PASSWORD_API = settings.PASS_API
 

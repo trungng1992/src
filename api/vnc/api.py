@@ -62,8 +62,11 @@ class User(ViewSet):
             _passSalt = np.random.bytes(32)
             _passhash = _randomPasswordGuacamole+binascii.hexlify(_passSalt).decode("utf-8").upper()
 
+            m = hashlib.sha256()
+            m.update(bytearray(_passhash,"UTF-8"))
+
             _queryDB.password_hash = _passhash
-            _queryDB.password_salt = _passSalt
+            _queryDB.password_salt = m.digest()
             _queryDB.save()
 
 

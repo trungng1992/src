@@ -9,7 +9,7 @@ import json
 
 class Checksum_Header(MiddlewareMixin):
     def process_request(self, request):
-        return HttpResponse(request.META)
+        return HttpResponse(json.dumps(request))
         url = build_absolute_uri()
         USER_API = settings.USER_API
         PASSWORD_API = settings.PASS_API

@@ -40,6 +40,7 @@ class Checksum_Header(MiddlewareMixin):
         checksumToken = request.META.get('CHECKSUM-TOKEN') # get the username request header
         timeStamp     = request.META.get('TIMESTAMP')
         #authorization = request.META.get('HTTP_AUTHORIZATION')
+        return HttpResponse(timeStamp)
 
         if timeStamp == nTimestamp_bypass and settings.DEBUG:
             return
@@ -50,7 +51,6 @@ class Checksum_Header(MiddlewareMixin):
                 'response_code': 'Please check timestamp'
             }, status=HTTP_400_BAD_REQUEST)
 
-
         strToken   = hashlib.sha256('_'.join([USER_API,PASSWORD_API,timeStamp]).encode('utf-8')).hexdigest()
         if strToken != checksumToken:
             return self._response({
@@ -59,3 +59,5 @@ class Checksum_Header(MiddlewareMixin):
             }, status=HTTP_400_BAD_REQUEST)
 
         return
+
+    def process_response(self, request, response):

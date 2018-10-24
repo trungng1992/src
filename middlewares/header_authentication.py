@@ -67,3 +67,5 @@ class Checksum_Header(MiddlewareMixin):
         _response_time = int(time())
 
         timeExcute = _response_time - _response_time
+
+        return response()

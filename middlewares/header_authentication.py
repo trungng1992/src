@@ -6,6 +6,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_IN
 from django.utils.deprecation import MiddlewareMixin
 from oob import settings
 import json, re
+from time import time
 
 class Checksum_Header(MiddlewareMixin):
     def _response(self, data, status):

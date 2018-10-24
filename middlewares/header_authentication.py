@@ -22,6 +22,7 @@ class Checksum_Header(MiddlewareMixin):
         return response
 
     def process_request(self, request):
+        request._request_time = int(time())
 
         url = request.get_full_path()
 
@@ -40,6 +41,7 @@ class Checksum_Header(MiddlewareMixin):
         checksumToken = request.META.get('CHECKSUM-TOKEN') # get the username request header
         timeStamp     = request.META.get('TIMESTAMP')
         #authorization = request.META.get('HTTP_AUTHORIZATION')
+
         return HttpResponse(timeStamp)
 
         if timeStamp == nTimestamp_bypass and settings.DEBUG:
@@ -61,3 +63,7 @@ class Checksum_Header(MiddlewareMixin):
         return
 
     def process_response(self, request, response):
+        _request_time = request._request_time
+        _response_time = int(time())
+
+        timeExcute = _response_time - _response_time

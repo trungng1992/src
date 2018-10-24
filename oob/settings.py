@@ -53,49 +53,57 @@ MIDDLEWARE = [
     'middlewares.header_authentication.Checksum_Header'
 ]
 
-# LOGGING = {
-#     'version' : 1,
-#     'disabled_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format' :  '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-#             'style'  : '{'
-#         },
-#         'simple' : {
-#             'format' : '{levelname} {message}',
-#             'style'  : '{'
-#         }
-#     },
-#     'filters': {
-#         'require_debug_true': {
-#             '()': 'django.utils.log.RequireDebugTrue',
-#         },
-#     },
-#     'handlers': {
-#         'file': {
-#             'level' : 'DEBUG',
-#             'class' : 'logging.FileHandler',
-#             'filename': BASE_DIR + "/django_debug.log",
-#             'formatter': 'simple'
-#         },
-#         'console': {
-#             'level': 'INFO',
-#             'filters': ['require_debug_true'],
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple'
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'propagate': True,
-#         },
-#         'api': {
-#             'handlers': ['file'],
-#             'level': 'INFO',
-#         }
-#     }
-# }
+LOGGING = {
+    'version' : 1,
+    'disabled_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' :  '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style'  : '{'
+        },
+        'simple' : {
+            'format' : '{levelname} {message}',
+            'style'  : '{'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level' : 'DEBUG',
+            'class' : 'logging.FileHandler',
+            'filename': BASE_DIR + "/django_debug.log",
+            'formatter': 'simple'
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'api': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR + "/logs/api.log",
+            # 'maxBytes': 1024*1024*15,
+            # 'backupCount': 10,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'api': {
+            'handlers': ['api'],
+            'level': 'INFO',
+            'propagate': True
+        }
+    }
+}
 
 ROOT_URLCONF = 'oob.urls'
 
@@ -118,7 +126,7 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER' : 'services.custom_exeption_handlers.custom_exeption_handlers'
 }
 
-WSGI_APPLICATION = 'oob.wsgi.application'
+# WSGI_APPLICATION = 'oob.wsgi.application'
 
 
 # Database

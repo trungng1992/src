@@ -101,7 +101,7 @@ class User(ViewSet):
                 string.ascii_letters + string.digits)
                  for n in range(8)])
 
-        _rsp = _helperVNC.create_vnc(_userName, _randomPassword, 2)
+        _rsp = _helperVNC.create_vnc(_userName, _randomPassword, id)
 
         if _rsp.status_code == 500:
             return Response({
@@ -110,7 +110,7 @@ class User(ViewSet):
             }, HTTP_500_INTERNAL_SERVER_ERROR)
 
         #return Response(_rsp.text)
-        if not settings.DEBUG:
+        if not settings.DEBUG or 1:
             _jsonResponse = _rsp.json()
         else:
             _jsonResponse = {
@@ -123,38 +123,73 @@ class User(ViewSet):
                 }
             }
 
-        if _jsonResponse['response_code'] == 200:
+        _vnc_name = 'vnc-{}-{}'.format(_userName,id)
+
+        if int(_jsonResponse['response_code']) == 200:
+            #Create successfull
             _arrResponse = _jsonResponse['response_msg']
             _rsp_service = _arrResponse['container_service']
             _rsp_port    = _arrResponse['container_port']
             _rsp_ip      = _arrResponse['container_ip']
             _rsp_name    = _arrResponse['container_name']
 
-            _tmpConnection = Connection()
-            _tmpConnection.connection_name = _rsp_name
-            _tmpConnection.protocol = _rsp_service.lower()
-            _tmpConnection.max_connections = 2
-            _tmpConnection.max_connections_per_user = 1
-            _tmpConnection.proxy_encryption_method = None
-            _tmpConnection.proxy_hostname = None
-            _tmpConnection.save()
+            try:
+                _tmpConnection = Connection.objects.get(connection_name__contains=_vnc_name)
 
-            _tmpColorParameter = Connection_Parameter(id=None, parameter_name="color-depth", parameter_value="24", connection_id=_tmpConnection)
-            _tmpColorParameter.save()
+                _tmpHostnameParameter = Connection_Parameter(parameter_name="hostname",  connection_id=_rsp_ip)
+                _tmpHostnameParameter.parameter_value = _rsp_ip
+                _tmpHostnameParameter.save()
 
-            _tmpHostnameParameter = Connection_Parameter(id=None, parameter_name="hostname", parameter_value=_rsp_ip,  connection_id=_tmpConnection)
-            _tmpHostnameParameter.save()
+                _tmpPassParameter =  Connection_Parameter(id=None, parameter_name="password", parameter_value=_randomPassword,  connection_id=_tmpConnection)
+                _tmpPassParameter.save()
 
-            _tmpPassParameter =  Connection_Parameter(id=None, parameter_name="password", parameter_value=_randomPassword,  connection_id=_tmpConnection)
-            _tmpPassParameter.save()
+                _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
+                _tmpPortParameter.save()
 
-            _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
-            _tmpPortParameter.save()
+            except Connection.DoesNotExist:
+                _tmpConnection = Connection()
+                _tmpConnection.connection_name = _rsp_name
+                _tmpConnection.protocol = _rsp_service.lower()
+                _tmpConnection.max_connections = 2
+                _tmpConnection.max_connections_per_user = 1
+                _tmpConnection.proxy_encryption_method = None
+                _tmpConnection.proxy_hostname = None
+                _tmpConnection.failover_only = 0
+                _tmpConnection.save()
 
-            _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB, permission="READ")
-            _tmpConnectionPermission.save()
+                _tmpColorParameter = Connection_Parameter(id=None, parameter_name="color-depth", parameter_value="24", connection_id=_tmpConnection)
+                _tmpColorParameter.save()
+
+                _tmpHostnameParameter = Connection_Parameter(id=None, parameter_name="hostname", parameter_value=_rsp_ip,  connection_id=_tmpConnection)
+                _tmpHostnameParameter.save()
+
+                _tmpPassParameter =  Connection_Parameter(id=None, parameter_name="password", parameter_value=_randomPassword,  connection_id=_tmpConnection)
+                _tmpPassParameter.save()
+
+                _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
+                _tmpPortParameter.save()
+
+                _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB, permission="READ")
+                _tmpConnectionPermission.save()
+
+        elif int(_jsonResponse['response_code']) == 201:
+            #Connection is exists
+            _tmpConnection = Connection.objects.get(connection_name__contains  = _vnc_name)
+
+            if _tmpConnection.status_code == 200:
+                _jsonTmpConnection = _tmpConnection.json()
+                _tmpHostnameParameter = Connection_Parameter(parameter_name="hostname",  connection_id=_tmpConnection)
+                _tmpHostnameParameter.parameter_value = _jsonTmpConnection['response_msg']['container_ip']
+
+                _tmpHostnameParameter.save()
 
         return Response({
             'response_code': _jsonResponse['response_code'],
-            'response_msg': _jsonResponse['response_msg']
+            'response_msg': {
+                'container': _jsonResponse['response_msg'],
+                'guacamole': {
+                    'user': _userName,
+                    'pass': _randomPasswordGuacamole
+                }
+            }
         }, status= _jsonResponse['response_code'])

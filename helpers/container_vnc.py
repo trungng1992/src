@@ -34,7 +34,7 @@ class ContainerVNC(object):
 
     def create_vnc(self, user, pswd, id):
         payload = {
-            "id"        : id,
+            "id"        : str(id),
             "user"      : user,
             "pass"      : pswd
         }
@@ -46,5 +46,21 @@ class ContainerVNC(object):
 
     def get_status_vnc(self, connection_name):
         r = requests.get(self.url + "/status/" + connection_name,   headers= self.__get_header())
+
+        return r
+
+    def delete_vnc(self, connection_name):
+        r = requests.delete(self.url + '/delete' + connection_name, headers = self.__get_header())
+
+        return r
+
+    def get_connection_vnc(self, connection_name):
+        r = requests.get(self.url + "/connection/" + connection_name,   headers= self.__get_header())
+
+        return r
+
+
+    def get_info_vnc(self, connection_name):
+        r = requests.get(self.url + '/info/' + connection_name, headers = self.__get_header())
 
         return r

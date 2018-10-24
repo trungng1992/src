@@ -13,6 +13,7 @@ import hashlib
 class Authentication(ViewSet):
     def check_user(self, request, *agrs, **kwargs):
         _arrRequestParamKeys = request.data.keys()
+        # return Response(request.POST.dict())
         if 'username' not in _arrRequestParamKeys or 'password' not in _arrRequestParamKeys:
 
             return Response({

@@ -53,49 +53,49 @@ MIDDLEWARE = [
     'middlewares.header_authentication.Checksum_Header'
 ]
 
-LOGGING = {
-    'version' : 1,
-    'disabled_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format' :  '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style'  : '{'
-        },
-        'simple' : {
-            'format' : '{levelname} {message}',
-            'style'  : '{'
-        }
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'file': {
-            'level' : 'DEBUG',
-            'class' : 'logging.FileHandler',
-            'filename': BASE_DIR + "/django_debug.log",
-            'formatter': 'simple'
-        },
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-        },
-        'api': {
-            'handlers': ['file'],
-            'level': 'INFO',
-        }
-    }
-}
+# LOGGING = {
+#     'version' : 1,
+#     'disabled_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format' :  '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style'  : '{'
+#         },
+#         'simple' : {
+#             'format' : '{levelname} {message}',
+#             'style'  : '{'
+#         }
+#     },
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level' : 'DEBUG',
+#             'class' : 'logging.FileHandler',
+#             'filename': BASE_DIR + "/django_debug.log",
+#             'formatter': 'simple'
+#         },
+#         'console': {
+#             'level': 'INFO',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'propagate': True,
+#         },
+#         'api': {
+#             'handlers': ['file'],
+#             'level': 'INFO',
+#         }
+#     }
+# }
 
 ROOT_URLCONF = 'oob.urls'
 

@@ -1,9 +1,16 @@
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from oob import settings
+from django.http import HttpResponse
+from django.utils.six.moves.urllib.parse import urlparse
 
-class Checksum_Header(object):
+
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from django.utils.deprecation import MiddlewareMixin
+from oob import settings
+import json
+
+class Checksum_Header(MiddlewareMixin):
     def process_request(self, request):
+        return HttpResponse(request.META)
+        url = build_absolute_uri()
         USER_API = settings.USER_API
         PASSWORD_API = settings.PASS_API
 
@@ -29,9 +36,6 @@ class Checksum_Header(object):
 
         strToken   = hashlib.sha256('_'.join([USER_API,PASSWORD_API,timeStamp]).encode('utf-8')).hexdigest()
         if strToken != checksumToken:
-            return Response({
-                'response_code': HTTP_400_BAD_REQUEST,
-                'response_code': 'User is invalid'
-            }, status=HTTP_400_BAD_REQUEST)
+            raise Http403
 
         return

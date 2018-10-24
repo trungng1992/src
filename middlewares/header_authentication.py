@@ -1,16 +1,19 @@
 from django.http import HttpResponse
-from django.utils.six.moves.urllib.parse import urlparse
 
 
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from django.utils.deprecation import MiddlewareMixin
 from oob import settings
-import json
+import json, re
 
 class Checksum_Header(MiddlewareMixin):
     def process_request(self, request):
-        return HttpResponse(json.dumps(request))
-        url = build_absolute_uri()
+
+        url = request.get_full_path()
+
+        if re.match('^/api/v1/.*', url):
+            return
+
         USER_API = settings.USER_API
         PASSWORD_API = settings.PASS_API
 

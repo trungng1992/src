@@ -5,9 +5,6 @@ import json
 
 def custom_exeption_handlers(exc, context):
     response = exception_handler(exc, context)
-
-    print("Goodbye cruel world", file=sys.stderr)
-
     if response is not None:
         if type(exc).__name__ == "MethodNotAllowed":
             response.data['response_msg'] = "Method Not Allow"

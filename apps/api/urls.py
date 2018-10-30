@@ -1,8 +1,7 @@
-from django.conf.urls import url, include
-from rest_framework.routers import DefaultRouter
+from django.conf.urls import url
 
-from api.vnc.api import User
-from api.auth.authentication import Authentication
+from apps.api.api import User
+from apps.api.api import Authentication
 
 user_get = User.as_view({
     'get' : 'get_user_detail',

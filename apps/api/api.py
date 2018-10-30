@@ -1,20 +1,19 @@
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.viewsets import ViewSet
-from rest_framework.decorators import action
 
-from api.models import Users
-from api.models import Connection
-from api.models import Connection_Parameter
-from api.models import Connection_Permission
-from oob import settings
+from apps.api.models import Users
+from apps.api.models import Connection
+from apps.api.models import Connection_Parameter
+from apps.api.models import Connection_Permission
+from django.conf import settings
 from helpers.container_vnc import ContainerVNC
 import numpy as np
 import binascii
 import hashlib
 import random
 import string
-import json
+
 
 class User(ViewSet):
     def get_user_detail(self, request, *agrs, **kwargs):
@@ -132,6 +131,8 @@ class User(ViewSet):
             _rsp_port    = _arrResponse['container_port']
             _rsp_ip      = _arrResponse['container_ip']
             _rsp_name    = _arrResponse['container_name']
+            _rsp_user    = _arrResponse['container_user']
+
 
             try:
                 _tmpConnection = Connection.objects.get(connection_name__contains=_vnc_name)
@@ -149,15 +150,16 @@ class User(ViewSet):
             except Connection.DoesNotExist:
                 _tmpConnection = Connection()
                 _tmpConnection.connection_name = _rsp_name
-                _tmpConnection.protocol = _rsp_service.lower()
-                _tmpConnection.max_connections = 2
+                #_tmpConnection.protocol = _rsp_service.lower()
+                _tmpConnection.protocol = "rdp"
+                _tmpConnection.max_connections = 1
                 _tmpConnection.max_connections_per_user = 1
                 _tmpConnection.proxy_encryption_method = None
                 _tmpConnection.proxy_hostname = None
                 _tmpConnection.failover_only = 0
                 _tmpConnection.save()
 
-                _tmpColorParameter = Connection_Parameter(id=None, parameter_name="color-depth", parameter_value="24", connection_id=_tmpConnection)
+                _tmpColorParameter = Connection_Parameter(id=None, parameter_name="color-depth", parameter_value="16", connection_id=_tmpConnection)
                 _tmpColorParameter.save()
 
                 _tmpHostnameParameter = Connection_Parameter(id=None, parameter_name="hostname", parameter_value=_rsp_ip,  connection_id=_tmpConnection)
@@ -168,6 +170,16 @@ class User(ViewSet):
 
                 _tmpPortParameter = Connection_Parameter(id=None, parameter_name="port", parameter_value=_rsp_port,  connection_id=_tmpConnection)
                 _tmpPortParameter.save()
+
+                _tmpAudioParameter = Connection_Parameter(id=None, parameter_name="disable-audio", parameter_value="true", connection_id= _tmpConnection)
+                _tmpAudioParameter.save()
+
+                _tmpKeyboardParameter = Connection_Parameter(id=None, parameter_name="server-layout", parameter_value="en-us-qwerty", connection_id=_tmpConnection)
+                _tmpAudioParameter.save()
+
+                _tmpUserParameter = Connection_Parameter(id=None, parameter_name = "username", parameter_value=_rsp_user, connection_id= _tmpConnection)
+                _tmpUserParameter.save()
+
 
                 _tmpConnectionPermission = Connection_Permission(id=None,  connection_id=_tmpConnection, user_id = _queryDB, permission="READ")
                 _tmpConnectionPermission.save()
@@ -193,3 +205,46 @@ class User(ViewSet):
                 }
             }
         }, status= _jsonResponse['response_code'])
+
+
+class Authentication(ViewSet):
+    def check_user(self, request, *agrs, **kwargs):
+        _arrRequestParamKeys = request.data.keys()
+        # return Response(request.POST.dict())
+        if 'username' not in _arrRequestParamKeys or 'password' not in _arrRequestParamKeys:
+
+            return Response({
+                'response_code': HTTP_400_BAD_REQUEST,
+                'response_msg': 'Invalid Requests'
+            }, status = HTTP_400_BAD_REQUEST)
+
+        _userName = request.data['username']
+        _password = request.data['password']
+
+        try:
+            _queryDB = Users.objects.get(username=_userName)
+        except Users.DoesNotExist:
+            return Response({
+                'response_code': HTTP_400_BAD_REQUEST,
+                'response_msg' : 'User {} is not exists.'.format(_userName)
+            }, status = HTTP_400_BAD_REQUEST)
+
+        _passSalt = _password + binascii.hexlify(_queryDB.password_salt).decode("utf-8").upper()
+
+        m = hashlib.sha256()
+        m.update(bytearray(_passSalt,"UTF-8"))
+
+        _passhash = binascii.hexlify(m.digest())
+        _passHashInDB = binascii.hexlify(_queryDB.password_hash)
+
+        if _passhash == _passHashInDB:
+            return  Response({
+                'response_code': HTTP_200_OK,
+                'response_msg' : "Success",
+            }, status = HTTP_200_OK)
+        else:
+            return Response({
+                'response_code' : HTTP_400_BAD_REQUEST,
+                'response_msg'  : "Wrong password. Please contact p.sns.tos to renew password"
+            }, status = HTTP_400_BAD_REQUEST)
+

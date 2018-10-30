@@ -8,7 +8,6 @@ class PERMISSION(Enum):
     DELETE = 'DELETE'
     ADMINISTER = 'ADMINISTER'
 
-
 class Users(models.Model):
     '''
     Table: guacamole_user
@@ -102,3 +101,27 @@ class Connection_Permission(models.Model):
         max_length = 10,
         choices = [(tag, tag.value) for tag in PERMISSION]
     )
+
+
+class UserOOB(models.Model):
+    '''
+     Table: tbl_user_info
+    '''
+
+    class Meta:
+        managed = False
+        db_table = "tbl_user_info"
+
+    id = models.AutoField(primary_key=True)
+    serial = models.CharField(max_length=100, null=False)
+    ip_console = models.CharField(max_length=100, null=False)
+    type = models.CharField(max_length=10, null=False)
+    version = models.CharField(max_length=20, null=False)
+    firmware = models.CharField(max_length=20, null=False)
+    domain = models.CharField(max_length=100, null=False)
+    site = models.CharField(max_length=50, null=False)
+    user_admin = models.CharField(max_length=255, null=False)
+    pass_admin = models.CharField(max_length=255, null=False)
+    pass_console = models.CharField(max_length=255, null=False)
+    user_oob = models.CharField(max_length=255, null=False)
+    pass_oob = models.CharField(max_length=255, null = False)

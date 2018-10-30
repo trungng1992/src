@@ -1,13 +1,14 @@
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from rest_framework.response import Response
+#from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
-from oob import settings
+from settings import base
 from time import time
 import json
 import re
 import logging
+import hashlib
 logger = logging.getLogger('api')
 '''
 Config log
@@ -27,8 +28,8 @@ class Checksum_Header(MiddlewareMixin):
 
         request._is_api = True
         request._body = request.body
-        USER_API = settings.USER_API
-        PASSWORD_API = settings.PASS_API
+        USER_API = base.USER_API
+        PASSWORD_API = base.PASS_API
 
         nTimestamp   = str(int(time()))
         nTimestamp_bypass = "987654321"
@@ -45,7 +46,7 @@ class Checksum_Header(MiddlewareMixin):
                 'response_msg': 'Please insert timestamp and checksum'
             }, status = HTTP_400_BAD_REQUEST)
 
-        if timeStamp == nTimestamp_bypass and settings.DEBUG:
+        if timeStamp == nTimestamp_bypass and base.DEBUG:
             return
 
         if abs(int(nTimestamp) - int(timeStamp)) > 600:
@@ -81,6 +82,17 @@ class Checksum_Header(MiddlewareMixin):
 
             headers = ';'.join("%s: %s" % c for c in response_headers)
 
+            try:
+                contentRequest = json.loads(request._body)
+            except:
+                contentRequest = ""
+
+
+            try:
+                contentResponse = json.loads(response.content)
+            except:
+                contentResponse = ""
+
             _tmpLog = {
                 "client_ip": request.META.get('HTTP_HOST'),
                 'method': request.method,
@@ -89,8 +101,8 @@ class Checksum_Header(MiddlewareMixin):
                 'meta': meta,
                 'headers': headers,
                 'status': status,
-                'context': json.loads(request._body),
-                #'response_msg': json.loads(response.content)
+                'context': contentRequest,
+                'response_msg': contentResponse
             }
 
             logger.info(json.dumps(_tmpLog))

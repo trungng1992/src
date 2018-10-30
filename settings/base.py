@@ -9,11 +9,17 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+from __future__ import unicode_literals
+from os.path import abspath, basename, dirname, join, normpath
+from sys import path
 
-import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = dirname(dirname(abspath(__file__)))
+DJANGO_ROOT = dirname(dirname(abspath(__file__)))
+SITE_ROOT = dirname(DJANGO_ROOT)
+SITE_NAME = "API_OOB"
+path.append(DJANGO_ROOT)
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,24 +29,35 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '2zrr-w4=*z^&q4$&%=h!3h#y(^)k7z%84a+vxdcg8w^^r&37bq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
+ADMINS = (
+    ('Trung. Nguyen', 'trungn@vng.com.vn'),
+)
+MANAGERS = ADMINS
 
 # Application definition
 
-INSTALLED_APPS = [
-    #'django.contrib.admin',
-    'django.contrib.auth',
+CORE_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+]
+
+THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
-    'api'
 ]
+
+MY_APPS = [
+    'apps.api'
+]
+
+INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + MY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -105,7 +122,7 @@ LOGGING = {
     }
 }
 
-ROOT_URLCONF = 'oob.urls'
+ROOT_URLCONF = 'settings.urls'
 
 TEMPLATES = [
     {
@@ -126,6 +143,11 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER' : 'services.custom_exeption_handlers.custom_exeption_handlers'
 }
 
+
+LOCALE_PATHS = (
+    join(SITE_ROOT, 'locale'),
+)
+
 # WSGI_APPLICATION = 'oob.wsgi.application'
 
 
@@ -142,25 +164,6 @@ DATABASES = {
         'POST': '3306'
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 
 # Internationalization
@@ -181,7 +184,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = normpath(join(SITE_ROOT, 'static'))
+STATICFILES_DIRS = (
+    normpath(join(SITE_ROOT, 'static')),
+)
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 APPEND_SLASH  = True
 
 
